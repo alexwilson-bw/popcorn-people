@@ -87,13 +87,14 @@ onMounted(() => {
 <style scoped>
 
 #app {
-  margin: 0 auto;
-  width: 100%;
-  max-width: 1200px;
-  padding: 0 20px;
+  width: 75vw;
+  margin-left: 12.5vw;
 }
 
-
+.components-container {
+  display: flex;
+  flex-direction: row;
+}
 
 
 </style>

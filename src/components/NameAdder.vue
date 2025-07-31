@@ -51,22 +51,9 @@ const namesStore = useNamesStore();
 }
 
 #main {
-  width: 100%;
-  max-width: 600px;
+  width: 35%;
 }
 
-@media (max-width: 768px) {
-  #main {
-    max-width: 100%;
-  }
 
-  .v-list-item {
-    padding: 8px;
-  }
-
-  .v-list-item-title {
-    font-size: 0.9rem;
-  }
-}
 
 </style>

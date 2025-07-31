@@ -5,6 +5,42 @@ import { useNamesStore } from '@/stores/names';
 // Use the names store
 const namesStore = useNamesStore();
 
+// List of fear-inspiring messages related to impending doom
+const doomMessages = [
+  "The wheel of fate is turning...",
+  "Your destiny awaits at the end of this spin...",
+  "There's no escaping what comes next...",
+  "The decision is out of your hands now...",
+  "What will be, will be...",
+  "The inevitable approaches...",
+  "Time slows as your fate is decided...",
+  "The countdown to your selection has begun...",
+  "No turning back now...",
+  "The wheel knows all, decides all...",
+  "Your future spins before your eyes...",
+  "The wheel of doom turns relentlessly...",
+  "Resistance is futile, the wheel decides...",
+  "The moment of truth draws near...",
+  "Brace yourself for the wheel's judgment...",
+  "The spinning wheel seals your fate...",
+  "Your destiny is spinning into view...",
+  "The wheel's choice is final and binding...",
+  "Fortune favors the brave, or does it?",
+  "The wheel is indifferent to your hopes...",
+  "Each rotation brings you closer to the truth...",
+  "The wheel's verdict is moments away...",
+  "No amount of wishing can change the wheel's mind...",
+  "The wheel's decision is absolute...",
+  "Your fate hangs in the balance...",
+  "The wheel spins, and with it, your future...",
+  "There's a certain poetry to letting chance decide...",
+  "The wheel cares not for your preferences...",
+  "The final judgment approaches with each rotation..."
+];
+
+// Current fear message
+const currentFearMessage = ref("");
+
 // Function to generate a pie slice shape with curved edges
 const generatePieSlice = (totalSegments: number) => {
   const segmentAngle = 360 / totalSegments;
@@ -31,6 +67,13 @@ const generatePieSlice = (totalSegments: number) => {
 const isSpinning = ref(false);
 const rotation = ref(0);
 const selectedName = ref<string | null>(null);
+const hasSpun = ref(false);
+const spinData = ref({
+  totalSpins: 0,
+  spinOffset: 0,
+  rotationAdded: 0,
+  finalRotation: 0
+});
 
 // Computed property for wheel segments
 const segments = computed(() => {
@@ -52,11 +95,26 @@ const spinWheel = () => {
   isSpinning.value = true;
   selectedName.value = null;
 
+  // Select a random fear message
+  const randomIndex = Math.floor(Math.random() * doomMessages.length);
+  currentFearMessage.value = doomMessages[randomIndex];
+
   // Random spin: 2-8 full rotations + random angle
-  const minSpins = 2;
-  const maxSpins = 12;
+  const minSpins = 4;
+  const maxSpins = 30;
   const spins = Math.random() * (maxSpins - minSpins) + minSpins;
-  const finalRotation = rotation.value + (spins * 360) + Math.random() * 360;
+  const spinInDegrees = (spins * 360)
+  const spinOffset = Math.random() * 360;
+  const finalRotation = rotation.value + spinInDegrees + spinOffset
+
+  // Store spin data for display
+  spinData.value = {
+    totalSpins: spins,
+    spinOffset: spinOffset,
+    rotationAdded: spinInDegrees + spinOffset,
+    finalRotation: finalRotation
+  };
+  hasSpun.value = true;
 
   rotation.value = finalRotation;
 
@@ -76,10 +134,7 @@ const spinWheel = () => {
 </script>
 
 <template>
-  <v-card class="mx-auto my-4" max-width="800">
-<!--    <v-card-title class="text-h5 bg-primary text-white">-->
-<!--      -->
-<!--    </v-card-title>-->
+  <v-card id="wheel-o-popcorn" class="mx-auto my-4">
 
     <v-card-text class="wheel-card-content">
       <!-- Spinner Wheel Section -->
@@ -139,6 +194,36 @@ const spinWheel = () => {
               </v-alert>
             </div>
           </div>
+
+
+          <div v-if="isSpinning" class="fear-message">
+            {{ currentFearMessage }}
+          </div>
+
+          <!-- Spin Data Panel - only shows after first spin -->
+          <div v-if="hasSpun" class="spin-data-panel mt-4">
+            <v-card variant="outlined" class="pa-3">
+              <v-card-title class="text-subtitle-1 pb-2">Spin Data</v-card-title>
+              <v-card-text class="py-0">
+                <div class="spin-data-item">
+                  <span class="spin-data-label">Total Spins:</span>
+                  <span class="spin-data-value">{{ spinData.totalSpins.toFixed(2) }}</span>
+                </div>
+                <div class="spin-data-item">
+                  <span class="spin-data-label">Random Degrees Offset (1-360):</span>
+                  <span class="spin-data-value">{{ spinData.spinOffset.toFixed(2) }}</span>
+                </div>
+                <div class="spin-data-item">
+                  <span class="spin-data-label">Total Degrees Rotation:</span>
+                  <span class="spin-data-value">{{ spinData.rotationAdded.toFixed(2) }}</span>
+                </div>
+                <div class="spin-data-item">
+                  <span class="spin-data-label">Total Rotation This Session:</span>
+                  <span class="spin-data-value">{{ spinData.finalRotation.toFixed(2) }}</span>
+                </div>
+              </v-card-text>
+            </v-card>
+          </div>
         </div>
       </div>
     </v-card-text>
@@ -146,6 +231,10 @@ const spinWheel = () => {
 </template>
 
 <style scoped>
+#wheel-o-popcorn {
+  width: 55%;
+}
+
 .wheel-section {
   display: flex;
   justify-content: center;
@@ -231,6 +320,22 @@ const spinWheel = () => {
 
 .no-names-alert {
   max-width: 300px;
+}
+
+.fear-message {
+  font-weight: bold;
+  color: #ff5722;
+  text-align: center;
+  font-size: 1.2rem;
+  margin-top: 1rem;
+  animation: pulse 1.5s infinite;
+  text-shadow: 0 0 5px rgba(255, 87, 34, 0.3);
+}
+
+@keyframes pulse {
+  0% { opacity: 0.7; }
+  50% { opacity: 1; }
+  100% { opacity: 0.7; }
 }
 
 /* Responsive adjustments */
@@ -324,5 +429,31 @@ const spinWheel = () => {
     border-right: 12px solid transparent;
     border-top: 24px solid #ff5722;
   }
+}
+
+/* Spin Data Panel Styles */
+.spin-data-panel {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.spin-data-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.spin-data-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: #555;
+}
+
+.spin-data-value {
+  font-family: monospace;
+  font-weight: 600;
+  color: #1976d2;
 }
 </style>
