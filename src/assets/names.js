@@ -4,12 +4,10 @@ export const names = [
   'Arun',
   'Banti',
   'Dudley',
-  'Isaac',
   'JBB',
   'Jonas',
   'Monis',
   'Noah',
   'Riley',
   'Yasmine',
-
 ];
